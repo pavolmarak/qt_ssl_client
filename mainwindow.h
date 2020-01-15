@@ -4,6 +4,8 @@
 #include <QMainWindow>
 #include <QAbstractSocket>
 #include <QTcpSocket>
+#include <QPixmap>
+#include <QDebug>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -20,6 +22,12 @@ public:
 private slots:
     void on_button_connect_clicked();
     void connectedSlot();
+    void disconnectedSlot();
+    void errorSlot(QAbstractSocket::SocketError);
+    void stateChangedSlot(QAbstractSocket::SocketState s);
+
+
+    void on_button_send_clicked();
 
 private:
     Ui::MainWindow *ui;
