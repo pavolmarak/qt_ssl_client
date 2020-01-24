@@ -4,7 +4,7 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
-    , socket(new QTcpSocket)
+    , socket(new QSslSocket)
 {
     ui->setupUi(this);
     ui->statusbar->showMessage("Unconnected");
@@ -13,7 +13,8 @@ MainWindow::MainWindow(QWidget *parent)
     connect(this->socket,SIGNAL(disconnected()),this,SLOT(disconnectedSlot()));
     connect(this->socket,SIGNAL(error(QAbstractSocket::SocketError)),this,SLOT(errorSlot(QAbstractSocket::SocketError)));
     connect(this->socket,SIGNAL(stateChanged(QAbstractSocket::SocketState)),this,SLOT(stateChangedSlot(QAbstractSocket::SocketState)));
-
+    connect(this->socket, SIGNAL(encrypted()),this, SLOT(encryptedSlot()));
+    connect(this->socket, SIGNAL(sslErrors(const QList<QSslError> &)),this, SLOT(sslErrorsSlot(const QList<QSslError> &)));
 }
 
 MainWindow::~MainWindow()
@@ -24,7 +25,8 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_button_connect_clicked()
 {
-    this->socket->connectToHost(ui->ip->text(),ui->port->text().toUInt());
+    //this->socket->ignoreSslErrors();
+    this->socket->connectToHostEncrypted(ui->ip->text(),ui->port->text().toUInt());
 }
 
 void MainWindow::connectedSlot()
@@ -49,11 +51,24 @@ void MainWindow::stateChangedSlot(QAbstractSocket::SocketState s)
     ui->log->append("State: " + QString::number(s));
 }
 
+void MainWindow::encryptedSlot()
+{
+    ui->log->append("Connection is encrypted");
+}
+
+void MainWindow::sslErrorsSlot(const QList<QSslError> &errors)
+{
+
+    for(const QSslError& e : errors){
+        ui->log->append("SSL Error: " + e.errorString());
+    }
+}
+
 
 
 
 
 void MainWindow::on_button_send_clicked()
 {
-
+qDebug() << this->socket->isEncrypted();
 }

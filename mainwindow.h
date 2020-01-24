@@ -3,7 +3,8 @@
 
 #include <QMainWindow>
 #include <QAbstractSocket>
-#include <QTcpSocket>
+#include <QSslSocket>
+#include <QSslError>
 #include <QPixmap>
 #include <QDebug>
 
@@ -25,12 +26,13 @@ private slots:
     void disconnectedSlot();
     void errorSlot(QAbstractSocket::SocketError);
     void stateChangedSlot(QAbstractSocket::SocketState s);
-
+    void encryptedSlot();
+    void sslErrorsSlot(const QList<QSslError> &errors);
 
     void on_button_send_clicked();
 
 private:
     Ui::MainWindow *ui;
-    QTcpSocket* socket;
+    QSslSocket* socket;
 };
 #endif // MAINWINDOW_H
